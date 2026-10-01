@@ -88,6 +88,12 @@ export const ScreenDirectoryModal: React.FC<ScreenDirectoryModalProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
+  // FIX 4A.1-DEV: Developer-only destinations that must not appear in the production
+  // screen directory. They remain reachable in development (import.meta.env.DEV).
+  const DEV_ONLY_VIEWS: AppView[] = [
+    'KOTLIN_ANDROID_CODE',
+  ];
+
   const screens: ScreenItem[] = [
     // Home & Core
     {
@@ -723,6 +729,11 @@ export const ScreenDirectoryModal: React.FC<ScreenDirectoryModalProps> = ({
 
   const filteredScreens = useMemo(() => {
     return screens.filter((screen) => {
+      // FIX 4A.1-DEV: Remove developer-only destinations from production navigation.
+      // In development they remain visible so tooling is unaffected.
+      if (!import.meta.env.DEV && DEV_ONLY_VIEWS.includes(screen.id)) {
+        return false;
+      }
       const matchesCategory = selectedCategory === 'All' || screen.category === selectedCategory;
       const query = searchQuery.toLowerCase().trim();
       const matchesQuery = !query || 

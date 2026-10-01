@@ -117,7 +117,10 @@ const MainAppContent: React.FC = () => {
   }, [isLoaded, isSignedIn, checkEntitlement]);
 
   const effectiveView = React.useMemo(() => {
-    if (!isLoaded) return currentView;
+    // FIX 4A.1-AUTH: Fail closed while Clerk auth state is unresolved.
+    // Previously this returned currentView (which is HOME from localStorage),
+    // allowing protected content to mount before authentication is known.
+    if (!isLoaded) return 'LOGIN_GATEWAY';
     if (!isSignedIn && !['ONBOARDING_WELCOME', 'INITIAL_BASELINE_SETUP', 'LOGIN_GATEWAY'].includes(currentView)) {
       return 'LOGIN_GATEWAY';
     }
@@ -131,10 +134,17 @@ const MainAppContent: React.FC = () => {
   // This is in App.tsx (not LoginGatewayScreen) because a full-page reload after
   // OTP verification can bypass LoginGatewayScreen entirely and land on HOME.
   const hadFiredOnboarding = useRef(false);
+  // FIX 4A.1-SIGNIN: Capture the navigation intent that existed before auth resolves.
+  // When auth completes we restore it rather than unconditionally overwriting with HOME.
+  // Views in SIGNIN_ORIGIN_DISCARD are not meaningful post-auth destinations; fall back to HOME.
+  const pendingNavigationIntent = useRef<AppView | null>(null);
   useEffect(() => {
     console.log('[App] auth state effect:', { isSignedIn, isLoaded });
     if (isLoaded && isSignedIn && !hadFiredOnboarding.current) {
       hadFiredOnboarding.current = true;
+      // Record the view that was active at the moment we discover the user is signed in.
+      // This is the "intent" we want to preserve where possible.
+      const captured = currentView;
       const pending = localStorage.getItem('pendingOnboardingData');
       console.log('[App] firing complete-onboarding:', { pending: pending ? JSON.parse(pending) : null });
       invoke('complete-onboarding', {
@@ -149,12 +159,27 @@ const MainAppContent: React.FC = () => {
         })
         .finally(() => {
           checkEntitlement();
-          setCurrentView('HOME');
+          // FIX 4A.1-SIGNIN: Restore the captured intent if it is a recoverable
+          // post-auth destination. Onboarding / auth views are not recoverable;
+          // in that case fall back to HOME (same as the previous unconditional behaviour).
+          const SIGNIN_ORIGIN_DISCARD: AppView[] = [
+            'LOGIN_GATEWAY',
+            'ONBOARDING_WELCOME',
+            'ONBOARDING_UNDERSTOOD',
+            'ONBOARDING_TRACK_EASE',
+            'ONBOARDING_SUCCESS',
+            'INITIAL_BASELINE_SETUP',
+            'FORGOT_PASSWORD',
+          ];
+          const destination: AppView =
+            captured && !SIGNIN_ORIGIN_DISCARD.includes(captured) ? captured : 'HOME';
+          setCurrentView(destination);
         });
     } else if (!isSignedIn) {
       hadFiredOnboarding.current = false;
+      pendingNavigationIntent.current = null;
     }
-  }, [isSignedIn, isLoaded, invoke, checkEntitlement, setCurrentView]);
+  }, [isSignedIn, isLoaded, invoke, checkEntitlement, setCurrentView, currentView]);
 
   const [modalDate, setModalDate] = useState<string>(formatDateToISO(new Date()));
   const [isLogModalOpen, setIsLogModalOpen] = useState<boolean>(false);
@@ -198,6 +223,55 @@ const MainAppContent: React.FC = () => {
     setModalDate(formatDateToISO(new Date()));
     setIsLogModalOpen(true);
   };
+
+  // FIX 4A.1-MODAL: Escape closes the topmost open App-level modal.
+  // Also intercepts the browser's popstate (hardware/browser back) while a modal
+  // is open so that back navigation does not change the current screen underneath.
+  useEffect(() => {
+    const isAnyModalOpen = isLogModalOpen || isDirectoryOpen;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      // Close modals in priority order: directory first, then log modal.
+      if (isDirectoryOpen) {
+        setIsDirectoryOpen(false);
+        return;
+      }
+      if (isLogModalOpen) {
+        setIsLogModalOpen(false);
+      }
+    };
+
+    // Intercept popstate so a back gesture/button does not navigate away
+    // from the underlying screen while a modal is covering it.
+    const handlePopState = (e: PopStateEvent) => {
+      if (isAnyModalOpen) {
+        e.preventDefault();
+        // Push a synthetic entry back so the history position is unchanged.
+        window.history.pushState(null, '', window.location.href);
+        if (isDirectoryOpen) {
+          setIsDirectoryOpen(false);
+          return;
+        }
+        if (isLogModalOpen) {
+          setIsLogModalOpen(false);
+        }
+      }
+    };
+
+    if (isAnyModalOpen) {
+      // Push a marker state so we have something to intercept on popstate.
+      window.history.pushState(null, '', window.location.href);
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [isLogModalOpen, isDirectoryOpen]);
 
   // If passcode is enabled and locked, display passcode screen
   if (settings.isPasscodeEnabled && isLocked) {
@@ -790,6 +864,15 @@ const MainAppContent: React.FC = () => {
         );
 
       case 'KOTLIN_ANDROID_CODE':
+        // FIX 4A.1-DEV: Developer-only screen. Redirect to NOT_FOUND in production builds.
+        if (!import.meta.env.DEV) {
+          return (
+            <ModernizedNotFoundScreen
+              onBack={() => setCurrentView('HOME')}
+              onNavigate={(view) => setCurrentView(view)}
+            />
+          );
+        }
         return (
           <KotlinAndroidCodeViewerScreen
             onBack={() => setCurrentView('PROFILE')}
