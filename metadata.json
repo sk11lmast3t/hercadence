@@ -1,0 +1,6 @@
+{
+  "name": "HerCadence: Period Tracker",
+  "description": "An elegant, serene menstrual cycle and wellness tracking app with frosted-glass calendar views, daily details, symptom logging, and phase predictions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

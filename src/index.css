@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --cream-bg: #FAF7F2;
+    --mauve-plum: #523446;
+    --mauve-plum-dark: #3D2232;
+    --blush-rose: #DE9E8E;
+    --sage-green: #7D9688;
+    --text-dark: #20171D;
+    --text-muted: #7A6C74;
+    --safe-area-top: env(safe-area-inset-top, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  html, body {
+    background-color: var(--cream-bg);
+    color: var(--text-dark);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    touch-action: manipulation;
+    overscroll-behavior-y: none;
+    min-height: 100%;
+    min-height: 100dvh;
+  }
+
+  h1, h2, h3, .font-serif {
+    font-family: 'Playfair Display', Georgia, Cambria, 'Times New Roman', Times, serif;
+  }
+
+  img {
+    -webkit-user-drag: none;
+    user-select: none;
+    max-width: 100%;
+  }
+}
+
+/* Hide in-screen duplicate status bar when running inside hardware phone bezel */
+#mobile_phone_screen .mobile-status-bar {
+  display: none !important;
+}
+
+/* Mobile phone container bounds fixed elements cleanly */
+#mobile_phone_screen {
+  contain: layout paint;
+}
+
+/* Safe area padding utilities for notch and home indicator */
+.pt-safe {
+  padding-top: max(12px, env(safe-area-inset-top));
+}
+
+.pb-safe {
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+/* Custom frosted glass utility */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+}
+
+.glass-panel-dark {
+  background: rgba(43, 29, 37, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.glass-orb {
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.2));
+  backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
+}
+
+/* Smooth scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #DCCFC7;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #C0AFAF;
+}
+
+/* Custom scrollbar and hide utilities */
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar,
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.custom-smooth-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #DECFC6 transparent;
+  scroll-behavior: smooth;
+}
+.custom-smooth-scroll::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-smooth-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-smooth-scroll::-webkit-scrollbar-thumb {
+  background: #DECFC6;
+  border-radius: 9999px;
+}
+.custom-smooth-scroll::-webkit-scrollbar-thumb:hover {
+  background: #C2B0A6;
+}

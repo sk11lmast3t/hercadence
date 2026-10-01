@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>
+      (function () {
+        var isVite = function (m) {
+          if (!m) return false;
+          var s = typeof m === 'string' ? m : (m.message || m.reason || String(m));
+          return typeof s === 'string' && s.indexOf('[vite]') !== -1;
+        };
+        ['error', 'warn', 'info', 'log'].forEach(function (method) {
+          var orig = console[method];
+          if (orig) {
+            console[method] = function () {
+              if (arguments && isVite(arguments[0])) return;
+              orig.apply(console, arguments);
+            };
+          }
+        });
+        window.addEventListener('error', function (e) {
+          if (isVite(e.message || e.error)) {
+            e.preventDefault && e.preventDefault();
+            e.stopImmediatePropagation && e.stopImmediatePropagation();
+          }
+        }, true);
+        window.addEventListener('unhandledrejection', function (e) {
+          if (isVite(e.reason)) {
+            e.preventDefault && e.preventDefault();
+            e.stopImmediatePropagation && e.stopImmediatePropagation();
+          }
+        }, true);
+      })();
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>HerCadence: Period Tracker</title>
+    <meta property="og:title" content="HerCadence: Period Tracker" />
+    <meta name="description" content="An elegant, serene menstrual cycle and wellness tracking app with frosted-glass calendar views, daily details, symptom logging, and phase predictions." />
+    <meta property="og:description" content="An elegant, serene menstrual cycle and wellness tracking app with frosted-glass calendar views, daily details, symptom logging, and phase predictions." />
+    
+    <!-- Mobile Web App Meta Tags -->
+    <link rel="icon" type="image/jpeg" href="/assets/hercadence_logo.jpg" />
+
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#523446" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="HerCadence" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-[#FAF7F2] text-[#2C2228] antialiased selection:bg-[#EBD7D9] selection:text-[#523446]">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

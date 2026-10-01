@@ -1,0 +1,10 @@
+DEAD BUTTONS REPORT
+
+Screen: KotlinAndroidCodeViewerScreen
+  - "Export Native Code" — no destination screen/feature exists (code viewer reference component)
+
+Screen: ConnectedDevicesScreen
+  - "Simulate Bluetooth Scan" — hardware device integration placeholder
+
+Screen: ModernizedWhatsNewScreen
+  - "View Historical Releases" — historical patch notes static list

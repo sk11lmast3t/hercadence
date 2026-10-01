@@ -1,0 +1,62 @@
+# supabase/config.toml
+#
+# Local-development configuration for the Supabase stack.
+#
+# ─── Platform JWT verification ──────────────────────────────────────────
+# Platform-level verify_jwt is DISABLED for these functions because they
+# receive Clerk-signed session tokens, which are not Supabase JWTs. Verification
+# is performed inside each function via supabase/functions/_shared/clerkAuth.ts
+# using Clerk's JWKS endpoint.
+#
+# For LOCAL development (supabase start / functions serve): the settings below
+# in [functions.<name>] disable the platform check.
+#
+# For PRODUCTION deployment, you must ALSO do one of:
+#   supabase functions deploy <name> --no-verify-jwt
+#   → or in the Supabase dashboard: select the function, Settings →
+#     toggle "Enforce JWT Verification" OFF.
+#
+# ─── Environment variables ──────────────────────────────────────────────
+# CLERK_ISSUER_URL must be set for Clerk JWT verification to work.
+#
+# Set locally (from project root):
+#   supabase secrets set CLERK_ISSUER_URL=https://content-kodiak-44.clerk.accounts.dev
+#
+# In the Supabase dashboard for production: Project Settings → Edge Functions
+# → Environment Variables → add CLERK_ISSUER_URL.
+#
+# The value is the Clerk frontend API URL (NOT the secret key).
+# Find it in the Clerk dashboard → "Frontend API" or decode the publishable key.
+#
+# NOTE: If you already have a config.toml with [postgres], [auth], etc. sections,
+# merge these [functions.*] entries into it rather than replacing the file.
+
+[functions.complete-onboarding]
+verify_jwt = false
+
+[functions.get-entitlement]
+verify_jwt = false
+
+[functions.delete-account]
+verify_jwt = false
+
+[functions.calculate-cycle]
+verify_jwt = false
+
+[functions.paypal-create-subscription]
+verify_jwt = false
+
+[functions.paypal-create-lifetime-order]
+verify_jwt = false
+
+[functions.paypal-webhook]
+verify_jwt = false
+
+[functions.send-reminders]
+verify_jwt = false
+
+[functions.export-health-report]
+verify_jwt = false
+
+[functions.nearby-care-proxy]
+verify_jwt = false

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">HerCadence</string>
+    <string name="title_activity_main">HerCadence</string>
+    <string name="package_name">com.hercadence.app</string>
+    <string name="custom_url_scheme">com.hercadence.app</string>
+</resources>
