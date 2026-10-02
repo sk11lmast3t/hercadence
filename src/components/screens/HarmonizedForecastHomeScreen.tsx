@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { AppView } from '../../types';
+import { createCanonicalNavigationController } from '../../navigation/canonicalNavigation';
 import { MobileStatusBar } from '../common/MobileStatusBar';
 import { useCycle } from '../../context/CycleContext';
 import { formatDateToISO } from '../../utils/cycleCalculations';
@@ -25,6 +26,7 @@ export const HarmonizedForecastHomeScreen: React.FC<HarmonizedForecastHomeScreen
   onOpenLogModal
 }) => {
   const { currentCycle, dayLogs, settings } = useCycle();
+  const canonicalNavigation = createCanonicalNavigationController(onNavigate);
   const todayStr = formatDateToISO(new Date());
   const todayLog = dayLogs[todayStr];
 
@@ -258,7 +260,7 @@ export const HarmonizedForecastHomeScreen: React.FC<HarmonizedForecastHomeScreen
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.25 }}
-              onClick={() => onNavigate('MEDICATION_TRACKER')}
+              onClick={() => canonicalNavigation.navigate({ type: 'feature', featureId: 'wellness.medication' })}
               className="rounded-[22px] bg-white border border-[#E9E4DF] p-3.5 flex items-center gap-3 cursor-pointer hover:border-[#D8CFCE] shadow-[0_2px_10px_rgba(0,0,0,0.02)] active:scale-[0.98] transition-all"
             >
               <div className="w-10 h-10 rounded-2xl bg-[#E2EDF4] text-[#1E3A4B] flex items-center justify-center shrink-0">
@@ -274,7 +276,7 @@ export const HarmonizedForecastHomeScreen: React.FC<HarmonizedForecastHomeScreen
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.3 }}
-              onClick={() => onNavigate('HYDRATION_TRACKER')}
+              onClick={() => canonicalNavigation.navigate({ type: 'feature', featureId: 'wellness.hydration' })}
               className="rounded-[22px] bg-white border border-[#E9E4DF] p-3.5 flex items-center gap-3 cursor-pointer hover:border-[#D8CFCE] shadow-[0_2px_10px_rgba(0,0,0,0.02)] active:scale-[0.98] transition-all"
             >
               <div className="w-10 h-10 rounded-2xl bg-[#E0F2FE] text-[#0284C7] flex items-center justify-center shrink-0">
@@ -292,7 +294,7 @@ export const HarmonizedForecastHomeScreen: React.FC<HarmonizedForecastHomeScreen
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.35 }}
-            onClick={() => onNavigate('PHYSICAL_ACTIVITY')}
+            onClick={() => canonicalNavigation.navigate({ type: 'feature', featureId: 'wellness.physicalActivity' })}
             className="rounded-[22px] bg-white border border-[#E9E4DF] p-3.5 flex items-center justify-between cursor-pointer hover:border-[#D8CFCE] shadow-[0_2px_10px_rgba(0,0,0,0.02)] active:scale-[0.98] transition-all"
           >
             <div className="flex items-center gap-3 min-w-0">

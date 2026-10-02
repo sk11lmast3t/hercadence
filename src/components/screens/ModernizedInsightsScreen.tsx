@@ -15,6 +15,7 @@ import {
 import { motion } from 'motion/react';
 import { AppView } from '../../types';
 import { getFeatureById } from '../../registry/featureRegistry';
+import { createCanonicalNavigationController } from '../../navigation/canonicalNavigation';
 
 const sleepFeature = getFeatureById('wellness.sleep');
 import { MobileStatusBar } from '../common/MobileStatusBar';
@@ -27,6 +28,7 @@ interface ModernizedInsightsScreenProps {
 export const ModernizedInsightsScreen: React.FC<ModernizedInsightsScreenProps> = ({
   onNavigate
 }) => {
+  const canonicalNavigation = createCanonicalNavigationController(onNavigate);
   const { averageCycleLength, averagePeriodLength, totalLogsCount, topSymptoms, flowDays } = useHealthInsights();
   // Wellness score: simple composite — more logs = better score, capped at 100
   const wellnessScore = Math.min(100, Math.round((totalLogsCount / 90) * 100));
@@ -326,7 +328,7 @@ export const ModernizedInsightsScreen: React.FC<ModernizedInsightsScreenProps> =
 
               {/* Sleep Insights & Quality */}
               <div
-                onClick={() => onNavigate(sleepFeature.route)}
+                onClick={() => canonicalNavigation.navigate({ type: 'feature', featureId: 'wellness.sleep' })}
                 className="p-3.5 rounded-2xl bg-white border border-[#EDE5DF] shadow-[0_4px_14px_rgba(0,0,0,0.02)] hover:border-[#D9CCC3] active:scale-[0.99] transition-all cursor-pointer flex items-center justify-between"
               >
                 <div className="flex items-center gap-3 min-w-0">
@@ -347,7 +349,7 @@ export const ModernizedInsightsScreen: React.FC<ModernizedInsightsScreenProps> =
 
               {/* Body Metrics & Weight Tracker */}
               <div
-                onClick={() => onNavigate('BODY_METRICS')}
+                onClick={() => canonicalNavigation.navigate({ type: 'feature', featureId: 'wellness.bodyMetrics' })}
                 className="p-3.5 rounded-2xl bg-white border border-[#EDE5DF] shadow-[0_4px_14px_rgba(0,0,0,0.02)] hover:border-[#D9CCC3] active:scale-[0.99] transition-all cursor-pointer flex items-center justify-between"
               >
                 <div className="flex items-center gap-3 min-w-0">
@@ -368,7 +370,7 @@ export const ModernizedInsightsScreen: React.FC<ModernizedInsightsScreenProps> =
 
               {/* Physical Activity Tracker */}
               <div
-                onClick={() => onNavigate('PHYSICAL_ACTIVITY')}
+                onClick={() => canonicalNavigation.navigate({ type: 'feature', featureId: 'wellness.physicalActivity' })}
                 className="p-3.5 rounded-2xl bg-white border border-[#EDE5DF] shadow-[0_4px_14px_rgba(0,0,0,0.02)] hover:border-[#D9CCC3] active:scale-[0.99] transition-all cursor-pointer flex items-center justify-between"
               >
                 <div className="flex items-center gap-3 min-w-0">
